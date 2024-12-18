@@ -1,0 +1,1 @@
+{"volume":64,"glsl-shaders":["~~/shaders/Anime4K_Denoise_Bilateral_Mode.glsl","~~/shaders/Anime4K_Restore_GAN_UL.glsl","~~/shaders/Anime4K_Upscale_GAN_x2_M.glsl"],"vf":[{"name":"vapoursynth","enabled":true,"params":{"file":"~~/vs/MEMC_RIFE_NV.vpy"}}],"icc-profile-auto":true,"mute":false}
