@@ -20,7 +20,7 @@ local o = {
     uosc_syntax = true,      -- toggle uosc menu syntax support
     escape_title = true,     -- escape & to && in menu title
     max_title_length = 40,   -- limit the title length, set to 0 to disable.
-    max_playlist_items = 15, -- limit the playlist items in submenu, set to 0 to disable.
+    max_playlist_items = 1000, -- limit the playlist items in submenu, set to 0 to disable.
 }
 opts.read_options(o)
 

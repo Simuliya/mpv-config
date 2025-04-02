@@ -41,7 +41,7 @@ local utils = require 'mp.utils'
 
 local o = {
     disabled = false,
-    images = true,
+    images = false,
     videos = true,
     audio = true,
     additional_image_exts = "",
@@ -49,7 +49,7 @@ local o = {
     additional_audio_exts = "",
     ignore_hidden = true,
     same_type = false,
-    directory_mode = "auto",
+    directory_mode = "recursive",
     ignore_patterns = ""
 }
 
@@ -204,22 +204,30 @@ end
 -- alphanum sorting for humans in Lua
 -- http://notebook.kulchenko.com/algorithms/alphanumeric-natural-sorting-for-humans-in-lua
 
-local function alphanumsort(filenames)
-    local function padnum(n, d)
-        return #d > 0 and ("%03d%s%.12f"):format(#n, n, tonumber(d) / (10 ^ #d))
-            or ("%03d%s"):format(#n, n)
+local function alphanumsort(entries)
+    local function padnum(d)
+        -- 处理数字部分（如 "2.10" -> "002.010"）
+        local parts = {}
+        for part in d:gmatch("%d+") do
+            table.insert(parts, tonumber(part))
+        end
+        local padded = ""
+        for _, num in ipairs(parts) do
+            padded = padded .. ("%03d."):format(num)
+        end
+        return padded
     end
 
-    local tuples = {}
-    for i, f in ipairs(filenames) do
-        tuples[i] = {f:lower():gsub("0*(%d+)%.?(%d*)", padnum), f}
-    end
-    table.sort(tuples, function(a, b)
-        return a[1] == b[1] and #b[2] < #a[2] or a[1] < b[1]
+    table.sort(entries, function(a, b)
+        -- 替换数字部分为填充格式
+        local a_padded = a:gsub("(%d+)", padnum)
+        local b_padded = b:gsub("(%d+)", padnum)
+        -- 比较时，目录和文件平等排序
+        return a_padded < b_padded
     end)
-    for i, tuple in ipairs(tuples) do filenames[i] = tuple[2] end
-    return filenames
+    return entries
 end
+
 
 local autoloaded
 local added_entries = {}
@@ -230,62 +238,59 @@ local function scan_dir(path, current_file, dir_mode, separator, dir_depth, tota
         return
     end
     msg.trace("scanning: " .. path)
+
+    -- 读取文件和目录
     local files = utils.readdir(path, "files") or {}
     local dirs = dir_mode ~= "ignore" and utils.readdir(path, "dirs") or {}
     local prefix = path == "." and "" or path
 
-    local function filter(t, iter)
+    -- 过滤隐藏文件和不符合扩展名的文件
+    local function filter(t, is_file)
         for i = #t, 1, -1 do
-            if not iter(t[i]) then
-                table.remove(t, i)
+            local full_path = prefix .. t[i]
+            if is_file then
+                -- 如果是文件，检查扩展名和忽略规则
+                local ext = get_extension(t[i])
+                if o.ignore_hidden and t[i]:match("^%.") or
+                    is_ignored(t[i]) or
+                    not (ext and extensions[ext:lower()]) then
+                    table.remove(t, i)
+                end
+            else
+                -- 如果是目录，仅检查隐藏规则
+                if o.ignore_hidden and t[i]:match("^%.") then
+                    table.remove(t, i)
+                end
             end
         end
     end
 
-    filter(files, function(v)
-        -- Always accept current file
-        local current = prefix .. v == current_file
-        if current then
-            return true
-        end
-        if o.ignore_hidden and v:match("^%.") then
-            return false
-        end
-        if is_ignored(v) then
-            return false
-        end
+    filter(files, true)
+    filter(dirs, false)
 
-        local ext = get_extension(v)
-        return ext and extensions[ext:lower()]
-    end)
-    filter(dirs, function(d)
-        return not (o.ignore_hidden and d:match("^%."))
-    end)
-    alphanumsort(files)
-    alphanumsort(dirs)
-
-    for i, file in ipairs(files) do
-        files[i] = prefix .. file
+    -- 合并文件和目录，统一排序
+    local all_entries = {}
+    for _, file in ipairs(files) do
+        table.insert(all_entries, prefix .. file)
+    end
+    for _, dir in ipairs(dirs) do
+        table.insert(all_entries, prefix .. dir .. separator)
     end
 
-    local function append(t1, t2)
-        local t1_size = #t1
-        for i = 1, #t2 do
-            t1[t1_size + i] = t2[i]
-        end
+    -- 自然排序
+    alphanumsort(all_entries)
+
+    -- 添加到总列表
+    for _, entry in ipairs(all_entries) do
+        table.insert(total_files, entry)
     end
 
-    append(total_files, files)
+    -- 递归扫描子目录（如果是 recursive 模式）
     if dir_mode == "recursive" then
         for _, dir in ipairs(dirs) do
             scan_dir(prefix .. dir .. separator, current_file, dir_mode,
                      separator, dir_depth + 1, total_files, extensions)
         end
-    else
-        for i, dir in ipairs(dirs) do
-            dirs[i] = prefix .. dir
-        end
-        append(total_files, dirs)
     end
 end
 
@@ -332,7 +337,7 @@ local function find_and_add_entries()
         extensions = EXTENSIONS
     end
     if not extensions then
-        msg.debug("stopping: no matched extentions list")
+        msg.debug("stopping: no matched extensions list")
         return
     end
 
