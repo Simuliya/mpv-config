@@ -1,10 +1,11 @@
-### https://github.com/hooke007/MPV_lazy/wiki/3_K7sfunc
+### https://github.com/hooke007/mpv_PlayKit/wiki/3_K7sfunc
 ### rife v4+ 补帧，性能要求很高
 
 import vapoursynth as vs
 from vapoursynth import core
 import k7sfunc as k7f
 
+core.num_threads = k7f.vs_t_dft
 clip = video_in
 
 ############
@@ -23,7 +24,7 @@ Gpu = 0
 Gpu_T = 2
 Lk_Fmt = False
 ## 整数，预降低处理源高度（填你的显示器高度）
-## <23|47|49> 使用的模型
+## <23|70|72|73> 使用的模型
 ## <True|False> 是否使用ensemble版模型
 ## 整数，Fps_Num/Fps_Den 的值即帧率倍数
 ## 整数
