@@ -1,3 +1,4 @@
+--跳转到上次播放的集数
 local mp = require 'mp'
 local mops = require 'mp.options'
 local utils = require 'mp.utils'
@@ -717,7 +718,7 @@ end
 -- mpv key bindings
 -- *****************************************************************************
 function M.bind_key()
-    mp.add_key_binding('ENTER', 'resume_yes', function()
+    mp.add_key_binding('y', 'resume_yes', function()
         local fname = M.playlist:restore()
         local dir = M.playlist.dir
         local path = join_path(dir, fname)

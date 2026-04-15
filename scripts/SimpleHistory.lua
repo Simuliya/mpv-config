@@ -3,6 +3,54 @@
 -- Creator: Eisa AlAwadhi
 -- Project: SimpleHistory
 -- Version: 1.1.6
+--[[
+=============================================================================
+【全局通用快捷键】(在任何界面均可使用)
+-----------------------------------------------------------------------------
+h 或 r       : 打开历史记录列表 (h=全部, r=最近观看)
+Ctrl + r     : 恢复上次播放 (若未播放则加载并跳转进度；若正在播放则跳转该视频进度)
+Alt + r      : 加载上次文件 (若未播放则从头加载；若正在播放则加入播放列表)
+Ctrl + H     : 开关无痕模式 (开启后不记录历史)
+
+【历史记录列表界面内】(按下 h 或 r 打开列表后生效)
+-----------------------------------------------------------------------------
+--- 导航与选择 ---
+↑ / ↓        : 上下移动光标 (也支持鼠标滚轮)
+PgUp / PgDn  : 向上/向下翻页
+Home / End   : 跳到列表第一项 / 最后一项
+Enter        : 播放选中项 (尝试恢复上次进度)
+Esc          : 关闭列表
+
+--- 批量操作 (高亮模式) ---
+Shift + ↑/↓  : 多选项目 (按住 Shift 再按方向键，选中项前会出现 ✅)
+Ctrl + a     : 全选当前页面所有项目
+Ctrl + d     : 取消所有高亮选择
+Shift + Enter: 将所有高亮 (✅) 的项目加入播放列表
+Shift + Del  : 从历史记录中删除所有高亮 (✅) 的项目
+
+--- 筛选与搜索 ---
+← / →        : 切换过滤器视图 (如：全部 -> 最近 -> 仅文件 -> 网址等)
+h / r / d / f: 快速跳转到指定过滤器 (h=全部, r=最近, d=不同路径, f=仅文件)
+Ctrl + f     : 激活搜索框 (输入文字搜索文件名、标题或日期)
+Alt + Enter  : 退出搜索打字模式但保留搜索结果 (或直接按 Esc 关闭搜索)
+
+--- 其他操作 ---
+Del          : 删除当前选中的单条历史记录
+Ctrl + Enter : 将选中项追加到当前播放列表末尾
+Alt + s      : 循环切换排序方式 (按时间、按字母、按添加顺序等)
+0 - 9        : 快速选择 (仅当列表显示项数 <=10 时有效，直接播放对应序号项)
+
+【过滤器视图说明】(按左右键切换)
+-----------------------------------------------------------------------------
+all        : 显示所有历史记录
+recents    : 显示最近观看的文件 (每个文件只显示最新的一条记录，去重)
+distinct   : 显示不同文件夹下的最近文件 (适合找不同剧集)
+protocols  : 仅显示网络流媒体 (如 YouTube, Magnet 链接)
+fileonly   : 仅显示没有记录进度的文件 (刚打开就关闭的文件)
+timeonly   : 仅显示有进度记录的文件
+keywords   : 显示包含特定关键词的历史 (需在脚本配置中设置 keywords_filter_list)
+playing    : 显示当前正在播放的文件的历史记录
+]]--
 
 local o = {
 ---------------------------USER CUSTOMIZATION SETTINGS---------------------------
@@ -23,16 +71,16 @@ local o = {
 	[""]
 	]], --Paths / URLs / Websites / Files / Protocols / Extensions, that wont be added to history automatically, e.g.: ["c:\\users\\eisa01\\desktop", "c:\\users\\eisa01\\desktop\\*", "c:\\temp\\naruto-01.mp4", "youtube.com", "https://dailymotion.com/", "avi", "https://www.youtube.com/watch?v=e8YBesRKq_U", ".jpeg", "magnet:", "https://", "ftp"]
 	history_resume_keybind=[[
-	["ctrl+r", "ctrl+R"]
+	["ctrl+r"]
 	]], --Keybind that will be used to immediately load and resume last item when no video is playing. If video is playing it will resume to the last found position
 	history_load_last_keybind=[[
-	["alt+r", "alt+R"]
+	["alt+r"]
 	]], --Keybind that will be used to immediately load the last item without resuming when no video is playing. If video is playing then it will add into playlist
 	open_list_keybind=[[
-	[ ["h", "all"], ["H", "all"], ["r", "recents"], ["R", "recents"] ]
+	[ ["h", "all"], ["r", "recents"] ]
 	]], --Keybind that will be used to open the list along with the specified filter. Available filters: 'all', 'recents', 'distinct', 'protocols', 'fileonly', 'titleonly', 'timeonly', 'keywords'.
 	list_filter_jump_keybind=[[
-	[ ["h", "all"], ["H", "all"], ["r", "recents"], ["R", "recents"], ["d", "distinct"], ["D", "distinct"], ["f", "fileonly"], ["F", "fileonly"] ]
+	[ ["h", "all"], ["r", "recents"], ["d", "distinct"], ["f", "fileonly"] ]
 	]], --Keybind that is used while the list is open to jump to the specific filter (it also enables pressing a filter keybind twice to close list). Available fitlers: 'all', 'recents', 'distinct', 'protocols', 'fileonly', 'titleonly', 'timeonly', 'keywords'.
 	
 	-----Incognito Settings----

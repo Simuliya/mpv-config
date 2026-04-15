@@ -35,6 +35,31 @@ Usage:
 For complete usage guide, see <https://github.com/Ajatt-Tools/mpvacious/blob/master/README.md>
 ]]
 
+
+--[[
+    1. 核心功能快捷键 (全局可用)
+Ctrl + n	导出笔记：将当前字幕行制作成 Anki 卡片（最常用）。
+a	打开主菜单：显示 mpvacious 的高级选项和状态。
+g	快速制卡菜单：打开数字选择菜单，用于快速选择要包含的字幕行数或卡片数。
+Alt + g	快速选择卡片数：直接选择要生成的卡片数量。
+Ctrl + c	复制字幕：将当前主要字幕文本复制到剪贴板。
+Ctrl + C	复制次要字幕：将当前次要字幕（如译文）复制到剪贴板。
+Ctrl + t	开关自动复制：切换是否每次移动字幕时自动复制到剪贴板。
+Ctrl + g	开关动态截图：切换是否生成 GIF/WebP 动态截图而非静态图片。
+2. 字幕导航与播放控制 (Vim 风格)
+H	跳转到上一句字幕。
+L	跳转到下一句字幕。
+Alt + h	跳转到上一句字幕并暂停。
+Alt + l	跳转到下一句字幕并暂停。
+Ctrl + h	重播当前字幕（从当前字幕开头播放到当前位置）。
+Ctrl + H	复读当前字幕（从当前字幕开头播放到结尾）。
+Ctrl + L	播放直到下一句字幕结束。
+3. 次要字幕控制
+Ctrl + v	显示/隐藏次要字幕轨道。
+Ctrl + k	切换到上一个次要字幕轨道。
+Ctrl + j	切换到下一个次要字幕轨道。
+]]
+
 local mp = require('mp')
 local OSD = require('osd_styler')
 local make_cfg_mgr = require('config.cfg_mgr')
