@@ -679,7 +679,7 @@ function M.resume_count_down()
         prompt_text = prompt_text .. 'S' .. season .. 'E' .. ep
     end
 
-    prompt_text = prompt_text .. " -- continue? " .. timeout .. " [ENTER/n]"
+    prompt_text = prompt_text .. " -- continue? " .. timeout .. " [y/n]"
     mpv_show_text(prompt_text, 1000)
 end
 
