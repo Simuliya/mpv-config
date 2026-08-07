@@ -28,7 +28,7 @@ local function is_full(track)
 end
 
 local function is_garbage(track)
-    for _, keyword in pairs({ 'song', 'sign', 'caption', 'commentary' }) do
+    for _, keyword in pairs({ 'song', 'sign', 'caption', 'commentary', 'bilingual', '双语' }) do
         if h.str_contains(track.title, keyword) then
             return true
         end
@@ -44,10 +44,17 @@ end
 
 local function find_best_secondary_sid()
     local active_track = h.get_active_track('sub')
+    -- If the current primary subtitle is already bilingual, skip loading a secondary subtitle.
+    if active_track and is_garbage(active_track) then
+        return nil
+    end
     local sub_tracks = h.get_loaded_tracks('sub')
     prioritize_full_subs(sub_tracks)
     for _, track in ipairs(sub_tracks) do
-        if is_accepted_language(track.lang) and not is_selected_language(track, active_track) then
+        if not is_garbage(track)
+            and is_accepted_language(track.lang)
+            and not is_selected_language(track, active_track)
+        then
             return track.id
         end
     end
