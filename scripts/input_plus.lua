@@ -67,10 +67,38 @@ local adevicelist = {}
 local target_ao = nil
 
 local chap_skip = false
-local chap_keywords = {
-	"OP$", "opening$", "オープニング$",
-	"ED$", "ending$", "エンディング$",
-}
+local chap_keywords = {}
+
+-- 从 uosc.conf 读取 chapter_range_patterns，和标蓝用同一套关键词
+local function load_chap_keywords_from_uosc()
+	local path = mp.command_native({"expand-path", "~~/script-opts/uosc.conf"})
+	local f = io.open(path, "r")
+	if not f then return end
+	for line in f:lines() do
+		local patterns = line:match("^chapter_range_patterns%s*=%s*(.+)$")
+		if patterns then
+			for type_patterns in patterns:gmatch("[^;]+") do
+				local kw_part = type_patterns:match(":%s*(.+)$")
+				if kw_part then
+					for kw in kw_part:gmatch("[^,]+") do
+						kw = kw:match("^%s*(.-)%s*$")
+						if kw and kw ~= "" then
+							table.insert(chap_keywords, kw)
+						end
+					end
+				end
+			end
+			break
+		end
+	end
+	f:close()
+end
+load_chap_keywords_from_uosc()
+
+-- 兜底
+if #chap_keywords == 0 then
+	chap_keywords = {"op", "opening", "ed", "ending", "オープニング", "エンディング", "片头", "片尾"}
+end
 
 local cmds_sqnum = {}
 local prop_tmp = ""
@@ -163,28 +191,79 @@ function adevicelist_fin(start, fin, step, dynamic)
 end
 
 
-function chap_skip_check(_, value)
-	if not value then
+function chap_skip_check(_, chapter_idx)
+	if not chapter_idx or not chap_skip then
 		return
 	end
-	for _, words in pairs(chap_keywords) do
-		if string.match(value, words) and chap_skip then
+	local chapters = mp.get_property_native("chapter-list")
+	if not chapters or not chapters[chapter_idx + 1] then
+		return
+	end
+	local title = chapters[chapter_idx + 1].title
+	if not title then return end
+	local lower = title:lower()
+	for _, kw in pairs(chap_keywords) do
+		if lower:find(kw:lower(), 1, true) then
 			mp.commandv("add", "chapter", 1)
-			mp.msg.info("chap_skip_check 跳过章节")
+			mp.msg.info("chap_skip_check 跳过章节: " .. title)
+			return
 		end
 	end
 end
-function chap_skip_toggle()
-	if chap_skip then
-		mp.unobserve_property(chap_skip_check)
-		chap_skip = false
-		mp.osd_message("[input_plus] " .. "已禁用跳过片头片尾", 1)
-		return
-	end
-	mp.observe_property("chapter-metadata/TITLE", "string", chap_skip_check)
-	chap_skip = true
-	mp.osd_message("[input_plus] " .. "已启用跳过片头片尾", 1)
+
+local function update_chap_skip_button()
+	mp.commandv("script-message-to", "uosc", "set-button", "chap_skip",
+		mp.utils.format_json({
+			icon = "skip_next",
+			tooltip = "跳过片头片尾",
+			active = chap_skip,
+			command = "script-binding chap_skip_toggle",
+		}))
 end
+
+local chap_skip_path = mp.command_native({"expand-path", "~~/"}) .. "/_cache/chap_skip.txt"
+
+local function save_chap_skip_state(want)
+	local f = io.open(chap_skip_path, "w")
+	if f then
+		f:write(want and "1" or "0")
+		f:close()
+	end
+end
+
+local function load_chap_skip_state()
+	local f = io.open(chap_skip_path, "r")
+	if f then
+		local v = f:read("*l")
+		f:close()
+		return v == "1"
+	end
+	return false
+end
+
+local function apply_chap_skip(want, silent)
+	if want == chap_skip then return end
+	chap_skip = want
+	if want then
+		mp.observe_property("chapter", "number", chap_skip_check)
+	else
+		mp.unobserve_property(chap_skip_check)
+	end
+	save_chap_skip_state(want)
+	if not silent then
+		mp.osd_message("[input_plus] " .. (want and "已启用" or "已禁用") .. "跳过片头片尾", 1)
+	end
+	update_chap_skip_button()
+end
+
+function chap_skip_toggle()
+	apply_chap_skip(not chap_skip)
+end
+
+mp.register_event("file-loaded", function()
+	apply_chap_skip(load_chap_skip_state(), true)
+	update_chap_skip_button()
+end)
 
 function chapter_seek_force(step, nat, uosc)
 	if tonumber(step) >= 0 then
