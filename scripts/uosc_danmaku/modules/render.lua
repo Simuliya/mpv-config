@@ -252,6 +252,19 @@ mp.observe_property('pause', 'bool', function(_, value)
     end
 end)
 
+-- 监听 vf 变化：vapoursynth 补帧在位时移除多余的 @danmaku:fps 滤镜
+-- 修换集时序问题（fps 在 RIFE 初始化完成前被加入，RIFE 就绪后自动清理）
+mp.observe_property('vf', 'native', function(_, vf)
+    if type(vf) ~= "table" then return end
+    local has_vs = false
+    for _, f in ipairs(vf) do
+        if f.name == "vapoursynth" then has_vs = true break end
+    end
+    if has_vs and filter_state("danmaku") then
+        mp.commandv("vf", "remove", "@danmaku")
+    end
+end)
+
 mp.register_event('playback-restart', function(event)
     if event.error then
         return msg.error(event.error)
