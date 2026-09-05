@@ -186,6 +186,17 @@ function show_danmaku_func()
         if (display_fps and display_fps < 58) or (video_fps and video_fps > 58) then
             return
         end
+        -- 已有 vapoursynth 补帧滤镜时不再叠加 fps 滤镜，避免双帧率转换器串联导致 RIFE 掉帧
+        local has_vapoursynth = false
+        local vfs = mp.get_property_native("vf")
+        if type(vfs) == "table" then
+            for _, f in ipairs(vfs) do
+                if f.name == "vapoursynth" then has_vapoursynth = true break end
+            end
+        end
+        if has_vapoursynth then
+            return
+        end
         if not filter_state("danmaku", "fps") then
             mp.commandv("vf", "append", string.format("@danmaku:fps=fps=%s", options.fps))
         end
