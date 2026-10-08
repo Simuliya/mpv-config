@@ -28,7 +28,8 @@ local function is_full(track)
 end
 
 local function is_garbage(track)
-    for _, keyword in pairs({ 'song', 'sign', 'caption', 'commentary', 'bilingual', '双语' }) do
+    for _, keyword in pairs({ 'song', 'sign', 'caption', 'commentary', 'bilingual', '双语',
+            '中日', '中英', '中上英下', '英上中下', '中上日下', '日上中下' }) do
         if h.str_contains(track.title, keyword) then
             return true
         end
