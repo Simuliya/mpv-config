@@ -38,22 +38,22 @@ mp.register_event('end-file', function(ev)
 end)
 
 -- 运行时把 uosc 的 default_directory 指向指定目录
--- 依据:mpv >= 0.38 的 mp.options.read_options 支持 on_update,
---       uosc 通过 read_options(options, nil, handle_options) 使用该特性,
---       改 script-opts 会实时通知 uosc 并更新其 options.default_directory。
+-- 用 change-list append(等价命令行 --script-opts-append)只追加一项。
+-- 切勿读整串 script-opts 再写回:其中含逗号的值(uosc-video_types=avi,flv,...)
+-- 会被按逗号重新解析而破坏 uosc 的类型过滤(文件浏览器将看不到视频文件)。
+-- uosc 通过 read_options(options, nil, handle_options) 实时接收该变更。
+local last_entry = nil
 local function set_uosc_default_dir(dir)
-	local ok, err = pcall(function()
-		local parts = {}
-		-- 保留除 uosc-default_directory 之外的既有脚本选项
-		for item in (mp.get_property('script-opts') or ''):gmatch('[^,]+') do
-			if not item:match('^%s*uosc%-default_directory%s*=') then
-				parts[#parts + 1] = item
-			end
-		end
-		parts[#parts + 1] = 'uosc-default_directory=' .. dir
-		mp.set_property('script-opts', table.concat(parts, ','))
+	local entry = 'uosc-default_directory=' .. dir
+	pcall(function()
+		if last_entry then mp.commandv('change-list', 'script-opts', 'remove', last_entry) end
 	end)
-	if not ok then
+	local ok, err = pcall(function()
+		mp.commandv('change-list', 'script-opts', 'append', entry)
+	end)
+	if ok then
+		last_entry = entry
+	else
 		mp.msg.warn('set uosc default_directory failed: ' .. tostring(err))
 	end
 end

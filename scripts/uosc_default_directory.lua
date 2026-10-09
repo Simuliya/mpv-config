@@ -50,18 +50,14 @@ local function system_videos_dir()
 	return nil
 end
 
--- 通过运行时改 script-opts 设置 uosc 的默认目录(uosc 使用 read_options 的 on_update,
--- mpv >= 0.38,uosc/main.lua 已注册,改后会实时更新其 options.default_directory)
+-- 通过运行时改 script-opts 设置 uosc 的默认目录。
+-- 用 change-list append(等价命令行 --script-opts-append)只追加一项,不重解析既有项。
+-- 切勿读整串 script-opts 再写回:其中含逗号的值(uosc-video_types=avi,flv,...)
+-- 会被按逗号重新解析而破坏 uosc 的类型过滤(文件浏览器将看不到视频文件)。
+-- uosc 通过 read_options(options, nil, handle_options) 实时接收该变更。
 local function set_uosc_default_dir(dir)
 	local ok, err = pcall(function()
-		local parts = {}
-		for item in (mp.get_property('script-opts') or ''):gmatch('[^,]+') do
-			if not item:match('^%s*uosc%-default_directory%s*=') then
-				parts[#parts + 1] = item
-			end
-		end
-		parts[#parts + 1] = 'uosc-default_directory=' .. dir
-		mp.set_property('script-opts', table.concat(parts, ','))
+		mp.commandv('change-list', 'script-opts', 'append', 'uosc-default_directory=' .. dir)
 	end)
 	if not ok then
 		mp.msg.warn('set uosc default_directory failed: ' .. tostring(err))
