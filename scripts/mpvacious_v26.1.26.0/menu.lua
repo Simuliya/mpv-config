@@ -57,9 +57,24 @@ function Menu:open()
     end
 
     for _, val in pairs(self.keybindings) do
-        mp.add_forced_key_binding(val.key, val.key, val.fn)
+        -- complex + forced: 与 fastforward.lua 同款，确保压过 input.conf 的同名绑定。
+        -- complex 绑定会在 down/up 各触发一次，这里只认 down 事件，避免动作被执行两遍。
+        local fn = val.fn
+        local function on_down(info)
+            if type(info) == "table" and info.event ~= nil and info.event ~= "down" then
+                return
+            end
+            return fn(info)
+        end
+        mp.add_forced_key_binding(val.key, val.key, on_down, { complex = true })
     end
 
+    -- 每次"从关闭→打开"都回到 basic 视图。
+    -- 否则若上次在面板里按 i 切到 'hidden'(隐藏整个菜单体),
+    -- 重新按 a 打开时渲染出来仍是空的,表现为"按 a 完全不起效果"。
+    if self.hints_state then
+        self.hints_state.set('basic')
+    end
     self.active = true
     self:update()
 end
