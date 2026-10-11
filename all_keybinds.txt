@@ -1,0 +1,292 @@
+====================================================================================================================
+ MPV 全部按键绑定 —— 按 Ctrl+i 的顺序排列（247 条）
+====================================================================================================================
+ mpv 版本   : v0.40.0-489-g95c7599c4 (mpv-lazy)
+ 配置目录   : D:\mpv-lazy\portable_config
+ 排序规则   : 按命令(cmd)升序 —— 与 uosc 的 Ctrl+i 菜单完全一致
+              (scripts/uosc/lib/menus.lua:701 get_keybinds_items 用 table.sort 按 cmd 排)
+ 数据来源   : mpv 启动时 input 模块 trace 日志（即 mpv 真实加载到的绑定）
+
+【怎么读】
+ 序号  命令                                      键位             来源            中文说明
+  ──   一行一条，和 Ctrl+i 菜单从上到下逐条对齐；最后一列是人工注释，可以直接读。
+ 来源三种：
+   内置        = 编译进 mpv.exe 的默认键位，配置文件目录里搜不到
+   config:N    = 你在 portable_config\input.conf 第 N 行写的
+   脚本: 名字  = 某个脚本运行时注册的
+ 中文说明里的括号标记：
+   （不弹提示）      = 命令带 no-osd，动作照常执行，只是不显示屏幕提示
+   （仅强制段生效）  = 脚本用 add_forced_key_binding 注册，平时按了没反应
+   （屏蔽…）        = ignore，故意占掉这个键位让它失效
+ 连击(chord) g-x = 先按 g、再在 2 秒内按 x（不是同时按）。
+ 方向约定（正负号含义，来自 mpv 官方选项文档）：
+   pan-x  正 = 画面右移（视角左移）         pan-y  正 = 画面下移（视角上移）
+   align-x -1 左 / 0 中 / 1 右              align-y -1 上 / 0 中 / 1 下
+   zoom / scale 正 = 放大                   panscan 正 = 裁掉更多画面
+   video-rotate 正 = 顺时针                 sub-pos 正 = 字幕下移（本配置 sub-pos=92）
+   audio-delay / sub-delay 正 = 延后
+
+【重要】
+ 1. uosc 自己的 11 条鼠标/滚轮内部事件 (uosc/__keybinding1..11) 被 uosc 用
+    owner ~= 'uosc' 排除了，Ctrl+i 里看不到，所以这里也没有。
+ 2. 标了「强制段」的（SimpleHistory 全部 4 条、mpvacious 的 export-note）平时按了没反应，
+    中文说明里也会标「（仅强制段生效）」。
+ 3. mpv 里 a 和 A、g 和 G、t 和 T 是两个不同的键（大写要按 Shift）。
+    例：#094 t / #095 T 都是切置顶；#233 o / #234 P 都是显示进度条。
+====================================================================================================================
+
+====================================================================================================================
+ 序号  命令                                                    键位             来源                           中文说明
+====================================================================================================================
+  001  ab-loop                                                l                config:19                       设置 / 清除 A-B 循环点
+  002  add audio-delay  0.1                                   v                config:28                       音频延迟 +0.1 秒（声音延后）
+  003  add audio-delay  0.100                                 Ctrl++           内置                            音频延迟 +0.100 秒
+  004  add audio-delay  0.100                                 Ctrl+KP_ADD      内置                            音频延迟 +0.100 秒（小键盘 +）
+  005  add audio-delay -0.1                                   c                config:27                       音频延迟 -0.1 秒（声音提前）
+  006  add audio-delay -0.100                                 Ctrl+-           内置                            音频延迟 -0.100 秒
+  007  add audio-delay -0.100                                 Ctrl+KP_SUBTRACT 内置                            音频延迟 -0.100 秒（小键盘 -）
+  008  add brightness  1                                      4                config:73                       亮度 +1
+  009  add brightness -1                                      3                config:72                       亮度 -1
+  010  add chapter -1                                         Shift+LEFT       config:128                      上一章
+  011  add chapter -1                                         PGDWN            内置                            上一章（PageDown）
+  012  add chapter 1                                          Shift+RIGHT      config:129                      下一章
+  013  add chapter 1                                          PGUP             内置                            下一章（PageUp）
+  014  add contrast  1                                        2                config:71                       对比度 +1
+  015  add contrast -1                                        1                config:70                       对比度 -1
+  016  add gamma  1                                           6                config:75                       伽马 +1
+  017  add gamma -1                                           5                config:74                       伽马 -1
+  018  add hue  1                                             0                config:79                       色相 +1
+  019  add hue -1                                             9                config:78                       色相 -1
+  020  add panscan +0.1                                       W                内置                            画面裁边 +0.1（裁掉更多画面，等效放大）
+  021  add panscan +0.1                                       e                内置                            画面裁边 +0.1（裁掉更多画面，等效放大）
+  022  add panscan -0.1                                       w                内置                            画面裁边 -0.1（少裁，等效缩小）
+  023  add saturation  1                                      8                config:77                       饱和度 +1
+  024  add saturation -1                                      7                config:76                       饱和度 -1
+  025  add secondary-sub-pos -1                               Alt+UP           config:33                       次字幕上移 1 行
+  026  add secondary-sub-pos 1                                Alt+DOWN         config:34                       次字幕下移 1 行
+  027  add sub-delay +0.1                                     Z                内置                            字幕延迟 +0.1 秒（字幕延后）
+  028  add sub-delay +0.1                                     x                config:30                       字幕延迟 +0.1 秒（字幕延后）
+  029  add sub-delay -0.1                                     z                config:29                       字幕延迟 -0.1 秒（字幕提前）
+  030  add sub-pos +1                                         R                内置                            主字幕下移 1 行
+  031  add sub-pos -1                                         Shift+UP         config:31                       主字幕上移 1 行
+  032  add sub-pos -1                                         r                内置                            主字幕上移 1 行
+  033  add sub-pos 1                                          Shift+DOWN       config:32                       主字幕下移 1 行
+  034  add sub-scale -0.1                                     F                内置                            主字幕字号 -0.1
+  035  add video-align-x  0.01                                Ctrl+KP_RIGHT    内置                            画面对齐微调 x +0.01（偏右）
+  036  add video-align-x  0.01; add video-align-y  0.01       Ctrl+KP_PGDWN    内置                            画面对齐微调 x +0.01 且 y +0.01
+  037  add video-align-x  0.01; add video-align-y -0.01       Ctrl+KP_PGUP     内置                            画面对齐微调 x +0.01 且 y -0.01
+  038  add video-align-x -0.01                                Ctrl+KP_LEFT     内置                            画面对齐微调 x -0.01（偏左）
+  039  add video-align-x -0.01; add video-align-y  0.01       Ctrl+KP_END      内置                            画面对齐微调 x -0.01 且 y +0.01
+  040  add video-align-x -0.01; add video-align-y -0.01       Ctrl+KP_HOME     内置                            画面对齐微调 x -0.01 且 y -0.01
+  041  add video-align-y  0.01                                Ctrl+KP_DOWN     内置                            画面对齐微调 y +0.01（偏下）
+  042  add video-align-y -0.01                                Ctrl+KP_UP       内置                            画面对齐微调 y -0.01（偏上）
+  043  add video-pan-x  0.01                                  Ctrl+KP6         内置                            画面平移微调 x +0.01（视角左移）
+  044  add video-pan-x  0.01; add video-pan-y  0.01           Ctrl+KP3         内置                            画面平移微调 x +0.01 且 y +0.01
+  045  add video-pan-x  0.01; add video-pan-y -0.01           Ctrl+KP9         内置                            画面平移微调 x +0.01 且 y -0.01
+  046  add video-pan-x  0.1                                   Alt+LEFT         内置                            画面平移 0.1（视角左移）
+  047  add video-pan-x -0.01                                  Ctrl+KP4         内置                            画面平移微调 x -0.01（视角右移）
+  048  add video-pan-x -0.01; add video-pan-y  0.01           Ctrl+KP1         内置                            画面平移微调 x -0.01 且 y +0.01
+  049  add video-pan-x -0.01; add video-pan-y -0.01           Ctrl+KP7         内置                            画面平移微调 x -0.01 且 y -0.01
+  050  add video-pan-x -0.1                                   Alt+RIGHT        内置                            画面平移 0.1（视角右移）
+  051  add video-pan-y  0.01                                  Ctrl+KP2         内置                            画面平移微调 y +0.01（视角上移）
+  052  add video-pan-y -0.01                                  Ctrl+KP8         内置                            画面平移微调 y -0.01（视角下移）
+  053  add video-rotate  1                                    Alt+KP3          内置                            画面顺时针旋转 1 度
+  054  add video-rotate -1                                    Alt+KP1          内置                            画面逆时针旋转 1 度
+  055  add video-scale-y  0.01                                KP8              内置                            画面纵向放大 0.01（小键盘 8）
+  056  add video-scale-y -0.01                                KP2              内置                            画面纵向缩小 0.01（小键盘 2）
+  057  add video-zoom     0.01                                KP9              内置                            画面放大 0.01（小键盘 9）
+  058  add video-zoom    -0.01                                KP1              内置                            画面缩小 0.01（小键盘 1）
+  059  add video-zoom   0.1                                   Alt++            内置                            画面放大 0.1
+  060  add video-zoom   0.1                                   ZOOMIN           内置                            画面放大 0.1（触控板放大手势）
+  061  add video-zoom  -0.1                                   Alt+-            内置                            画面缩小 0.1
+  062  add video-zoom  -0.1                                   ZOOMOUT          内置                            画面缩小 0.1（触控板缩小手势）
+  063  add video-zoom  0.1                                    Alt+KP_ADD       内置                            画面放大 0.1（小键盘 +）
+  064  add video-zoom -0.1                                    Alt+KP_SUBTRACT  内置                            画面缩小 0.1（小键盘 -）
+  065  add volume -1                                          WHEEL_DOWN       config:143                      音量 -1（滚轮下）
+  066  add volume -2                                          /                内置                            音量 -2
+  067  add volume -2                                          KP_DIVIDE        内置                            音量 -2（小键盘 /）
+  068  add volume -2                                          VOLUME_DOWN      内置                            音量 -2（系统音量减键）
+  069  add volume -5                                          DOWN             config:123                      音量 -5
+  070  add volume 1                                           WHEEL_UP         config:142                      音量 +1（滚轮上）
+  071  add volume 2                                           *                内置                            音量 +2
+  072  add volume 2                                           KP_MULTIPLY      内置                            音量 +2（小键盘 *）
+  073  add volume 2                                           VOLUME_UP        内置                            音量 +2（系统音量加键）
+  074  add volume 5                                           UP               config:122                      音量 +5
+  075  change-list glsl-shaders clr ""                        Ctrl+`           config:48                       清空全部着色器
+  076  change-list glsl-shaders toggle "..Adaptive_sharpen_lite_RT.glsl"    Ctrl+9  config:61                       开关着色器 自适应锐化lite RT（SCALED）
+  077  change-list glsl-shaders toggle "..Ani4Kv2_ArtCNN_C4F32_i2.glsl"     Ctrl+1  config:50                       开关着色器 Ani4Kv2（LUMA）
+  078  change-list glsl-shaders toggle "..AniSD_ArtCNN_C4F32_i4.glsl"       Ctrl+2  config:51                       开关着色器 AniSD（LUMA）
+  079  change-list glsl-shaders toggle "..Anime4K_AIO_optQ.glsl"            Ctrl+7  config:57                       开关着色器 Anime4K 配置Q（MAIN）
+  080  change-list glsl-shaders toggle "..Anime4K_Restore_CNN_L.glsl"       Ctrl+5  config:55                       开关着色器 Anime4K 重建（MAIN）
+  081  change-list glsl-shaders toggle "..Anime4K_Upscale_GAN_x2_M.glsl"    Ctrl+6  config:56                       开关着色器 Anime4K 放大（MAIN）
+  082  change-list glsl-shaders toggle "..FSRCNNX_x2_16_0_4_1.glsl"         Ctrl+3  config:52                       开关着色器 FSRCNNX（LUMA）
+  083  change-list glsl-shaders toggle "..QCOM_SGEDS_ms_RT.glsl"            Ctrl+8  config:59                       开关着色器 QCOM 缩放锐化 RT（POSTKERNEL）
+  084  change-list glsl-shaders toggle "..nnedi3_nns128_win8x4.glsl"        Ctrl+4  config:53                       开关着色器 NNEDI3（LUMA）
+  085  cycle deband                                           b                内置                            开关去色带(deband)
+  086  cycle deinterlace                                      d                内置                            循环切换去隔行模式
+  087  cycle edition                                          E                内置                            切换版本(edition)
+  088  cycle fullscreen                                       MBTN_LEFT_DBL    config:112                      切换全屏（鼠标左键双击）
+  089  cycle fullscreen                                       f                内置                            切换全屏
+  090  cycle fullscreen                                       Alt+ENTER        config:120                      切换全屏
+  091  cycle icc-profile-auto                                 =                config:68                       循环切换自动 ICC 校色模式
+  092  cycle mute                                             m                config:140                      静音 / 取消静音
+  093  cycle mute                                             MUTE             内置                            静音 / 取消静音（系统静音键）
+  094  cycle ontop                                            t                config:139                      切换窗口置顶
+  095  cycle ontop                                            T                内置                            切换窗口置顶
+  096  cycle pause                                            MBTN_LEFT        config:111                      暂停 / 播放（鼠标左键单击）
+  097  cycle pause                                            p                内置                            暂停 / 播放
+  098  cycle pause                                            SPACE            config:121                      暂停 / 播放
+  099  cycle pause                                            PLAYPAUSE        config:102                      暂停 / 播放（系统播放/暂停键）
+  100  cycle secondary-sid                                    k                config:141                      切换次字幕轨道
+  101  cycle secondary-sub-visibility                         Alt+v            内置                            显示 / 隐藏次字幕
+  102  cycle sub                                              j                内置                            切换字幕轨（下一条）
+  103  cycle sub down                                         J                内置                            切换字幕轨（上一条）
+  104  cycle sub-ass-use-video-data                           V                内置                            循环切换 ASS 用视频内置数据修复（修坏字幕）
+  105  cycle video                                            _                内置                            切换视频轨
+  106  cycle-values hwdec "no" "auto"                         Ctrl+h           内置                            循环切换硬件解码 关/自动
+  107  cycle-values loop-file "inf" "no"                      L                内置                            循环切换当前文件无限循环
+  108  cycle-values sub-ass-override "force" "scale"          u                内置                            循环切换字幕样式覆盖强度 force/scale   
+  109  cycle-values video-aspect-override "16:9" "4:3" "2.35:1" "no"         A         内置                            循环切换强制视频比例 16:9/4:3/2.35:1/自动
+  110  frame-back-step                                        ,                config:17                       后退一帧
+  111  frame-step                                             .                config:18                       前进一帧
+  112  ignore                                                 q                config:153                      屏蔽（禁用原生 q 退出）
+  113  ignore                                                 i                config:152                      屏蔽（禁用原生 i 状态显示）
+  114  ignore                                                 MBTN_RIGHT_DBL   config:115                      屏蔽（鼠标右键双击无动作）
+  115  no-osd add speed  0.1 ; script-message-to uosc flash-elements speed  }         config:23                       播放速度 +0.1（不弹提示，界面闪数字）
+  116  no-osd add speed -0.1 ; script-message-to uosc flash-elements speed  {         config:22                       播放速度 -0.1（不弹提示，界面闪数字）
+  117  no-osd add volume  1 ; script-message-to uosc flash-elements volume  +          config:25                       音量 +1（不弹提示）
+  118  no-osd add volume -1 ; script-message-to uosc flash-elements volume -           config:24                       音量 -1（不弹提示）
+  119  no-osd cycle-values osd-level 3 1                      O                内置                            循环切换 OSD 显示级别 3/1（不弹提示）
+  120  no-osd cycle-values speed 1 0.5 0.25 ; script-message-to uosc flash-elements speed  [  config:20                       播放速度循环切 1/0.5/0.25（不弹提示）
+  121  no-osd cycle-values speed 1 1.2 1.5 2 ; script-message-to uosc flash-elements speed  ]  config:21                       播放速度循环切 1/1.2/1.5/2（不弹提示）
+  122  no-osd set playlist-pos 0                              Shift+HOME       内置                            跳到播放列表第 1 条（不弹提示）
+  123  no-osd set playlist-pos-1 ${playlist-count}            Shift+END        内置                            跳到播放列表最后一条（不弹提示）
+  124  nonscalable script-binding SimpleHistory/history-incognito-mode       Ctrl+H  脚本: SimpleHistory(强制段)     历史记录：隐私模式开关（仅强制段生效）
+  125  nonscalable script-binding SimpleHistory/history-load-last            Alt+r   脚本: SimpleHistory(强制段)     历史记录：载入上一条（仅强制段生效）
+  126  nonscalable script-binding SimpleHistory/history-resume               Ctrl+r  脚本: SimpleHistory(强制段)     历史记录：恢复上次中断的播放（仅强制段生效）
+  127  nonscalable script-binding SimpleHistory/open-list                    h       脚本: SimpleHistory(强制段)     历史记录：打开历史列表（仅强制段生效）
+  128  nonscalable script-binding history_bookmark/resume_not                n       脚本: history_bookmark(段)      历史书签弹窗：否，不接着上次进度
+  129  nonscalable script-binding history_bookmark/resume_yes                y       脚本: history_bookmark(段)      历史书签弹窗：是，接着上次进度播
+  130  nonscalable script-binding mpvacious/mpvacious-autocopy-toggle        Ctrl+t  脚本: mpvacious(段)             开关自动复制字幕到剪贴板
+  131  nonscalable script-binding mpvacious/mpvacious-copy-secondary-sub-to-clipboard  Ctrl+C  脚本: mpvacious(段)             复制次字幕到剪贴板
+  132  nonscalable script-binding mpvacious/mpvacious-export-note            Ctrl+n  脚本: mpvacious(强制段)         导出笔记（仅强制段生效）
+  133  nonscalable script-binding mpvacious/mpvacious-overwrite-last-note    Ctrl+M  脚本: mpvacious(段)             覆盖最后一条笔记
+  134  nonscalable script-binding mpvacious/mpvacious-overwrite-selected-note Ctrl+B  脚本: mpvacious(段)             覆盖选中的笔记
+  135  nonscalable script-binding mpvacious/mpvacious-quick-card-sel-menu-open  Alt+g   脚本: mpvacious(段)             打开快速卡片选择菜单
+  136  nonscalable script-binding mpvacious/mpvacious-secondary-sid-next     Ctrl+j  脚本: mpvacious(段)             次字幕轨道 下一个
+  137  nonscalable script-binding mpvacious/mpvacious-secondary-sid-prev     Ctrl+k  脚本: mpvacious(段)             次字幕轨道 上一个
+  138  nonscalable script-binding mpvacious/mpvacious-sub-play-up-to-next    Ctrl+L  脚本: mpvacious(段)             播放到下一句字幕
+  139  nonscalable script-binding mpvacious/mpvacious-sub-seek-back          H       脚本: mpvacious(段)             跳到上一句字幕
+  140  nonscalable script-binding mpvacious/mpvacious-sub-seek-back-pause    Alt+h   脚本: mpvacious(段)             跳到上一句字幕并暂停
+  141  nonscalable script-binding mpvacious/mpvacious-sub-seek-forward-pause Alt+l   脚本: mpvacious(段)             跳到下一句字幕并暂停
+  142  nonscalable script-binding mpvacious/mpvacious-update-last-note       Ctrl+m  脚本: mpvacious(段)             更新最后一条笔记
+  143  nonscalable script-binding mpvacious/mpvacious-update-selected-note   Ctrl+b  脚本: mpvacious(段)             更新选中的笔记
+  144  nonscalable script-binding uosc_danmaku/open_search_danmaku_menu      Ctrl+d  脚本: uosc_danmaku(段)          打开弹幕搜索菜单
+  145  playlist-next                                          >                内置                            播放列表 下一条
+  146  playlist-next                                          NEXT             config:107                      播放列表 下一条（系统下一个键）
+  147  playlist-prev                                          <                内置                            播放列表 上一条
+  148  playlist-prev                                          PREV             config:106                      播放列表 上一条（系统上一个键）
+  149  playlist-prev                                          Ctrl+UP          config:133                      播放列表 上一条
+  150  quit                                                   POWER            config:99                       退出 mpv（系统电源键）
+  151  quit                                                   CLOSE_WIN        内置                            退出 mpv（点窗口关闭按钮）
+  152  quit 4                                                 Ctrl+c           内置                            强制退出 mpv（退出码 4，不保存进度）
+  153  quit-watch-later                                       Q                内置                            退出并把当前位置记入「稍后观看」
+  154  revert-seek mark                                       Shift+Ctrl+BS    内置                            在当前位置打标记，供撤销跳转移回
+  155  screenshot                                             s                内置                            截图（默认格式，含字幕）
+  156  screenshot each-frame                                  Alt+s            内置                            逐帧自动截图（再按一次停止）
+  157  screenshot video                                       S                内置                            按原始视频分辨率截图（不含字幕/OSD）
+  158  screenshot window                                      Ctrl+s           内置                            截图整个窗口（含 OSD 和字幕）
+  159  script-binding chap_skip_toggle                        F1               config:130                      开关自动跳过片头片尾
+  160  script-binding console/enable                          `                config:85                       显示 / 隐藏 mpv 命令行控制台
+  161  script-binding cutAudio                                Ctrl+a           config:150                      剪辑：截取音频段
+  162  script-binding cutVideo                                Ctrl+v           config:151                      剪辑：截取视频段
+  163  script-binding display-stats-toggle                    TAB              config:84                       开关常驻显示统计信息
+  164  script-binding generateGif                             Ctrl+g           config:146                      生成 GIF（不含字幕）
+  165  script-binding generateGifWithSub                      Ctrl+G           config:147                      生成 GIF（含字幕）
+  166  script-binding generateWebp                            Ctrl+w           config:148                      生成 WebP（不含字幕）
+  167  script-binding generateWebpWithSub                     Ctrl+W           config:149                      生成 WebP（含字幕）
+  168  script-binding mpvacious-menu-open                     a                config:154                      打开 mpvacious 主菜单
+  169  script-binding osc/visibility                          DEL              内置                            显示 / 隐藏内置界面(osc)
+  170  script-binding positioning/cursor-centric-zoom  0.1    Ctrl+WHEEL_UP    内置                            以鼠标为中心放大画面（Ctrl+滚轮上）
+  171  script-binding positioning/cursor-centric-zoom  0.1    Alt+WHEEL_UP     config:156                      以鼠标为中心放大画面（Alt+滚轮上）
+  172  script-binding positioning/cursor-centric-zoom -0.1    Ctrl+WHEEL_DOWN  内置                            以鼠标为中心缩小画面（Ctrl+滚轮下）
+  173  script-binding positioning/cursor-centric-zoom -0.1    Alt+WHEEL_DOWN   config:155                      以鼠标为中心缩小画面（Alt+滚轮下）
+  174  script-binding positioning/drag-to-pan                 Ctrl+MBTN_LEFT   内置                            按住 Ctrl+鼠标左键拖拽平移画面
+  175  script-binding select/menu                             g-m              内置                            打开 uosc 选择主菜单（连击 g 再 m）
+  176  script-binding select/menu                             MENU             内置                            打开 uosc 选择主菜单（菜单键）
+  177  script-binding select/menu                             Ctrl+p           内置                            打开 uosc 选择主菜单
+  178  script-binding select/select-aid                       g-a              内置                            选择音频轨
+  179  script-binding select/select-audio-device              g-d              内置                            选择音频输出设备
+  180  script-binding select/select-binding                   g-b              内置                            查看 / 重绑快捷键
+  181  script-binding select/select-chapter                   g-c              内置                            选择章节
+  182  script-binding select/select-edition                   g-e              内置                            选择版本(edition)
+  183  script-binding select/select-playlist                  g-p              内置                            选择播放列表条目
+  184  script-binding select/select-secondary-sid             g-S              内置                            选择次字幕轨
+  185  script-binding select/select-sid                       g-s              内置                            选择字幕轨
+  186  script-binding select/select-subtitle-line             g-l              内置                            选择字幕行
+  187  script-binding select/select-track                     g-t              内置                            选择任意轨道
+  188  script-binding select/select-vid                       g-v              内置                            选择视频轨
+  189  script-binding select/select-watch-history             g-h              内置                            选择播放历史
+  190  script-binding select/select-watch-later               g-w              内置                            选择「稍后观看」记录
+  191  script-binding select/show-properties                  g-r              内置                            显示全部属性
+  192  script-binding setEndTime                              G                config:145                      设置剪辑结束时间
+  193  script-binding setStartTime                            g                config:144                      设置剪辑开始时间
+  194  script-binding stats/display-page-4-toggle             ?                内置                            开关内置 stats 的快捷键页
+  195  script-binding stats/display-stats-toggle              I                内置                            开关内置 stats 常驻显示
+  196  script-binding uosc/keybinds                           Ctrl+i           config:83                       打开按键绑定列表（就是这份清单） 
+  197  script-binding uosc/menu                               MBTN_RIGHT       config:114                      打开 uosc 右键菜单
+  198  script-binding uosc/menu                               MBTN_MID         config:113                      打开 uosc 右键菜单（鼠标中键）
+  199  script-binding uosc/next                               MBTN_BACK        config:109                      播放列表 下一个（鼠标后退侧键）
+  200  script-binding uosc/next                               Ctrl+Alt+DOWN    config:136                      播放列表 下一个
+  201  script-binding uosc/prev                               MBTN_FORWARD     config:110                      播放列表 上一个（鼠标前进侧键）
+  202  script-binding uosc/prev                               Ctrl+Alt+UP      config:135                      播放列表 上一个
+  203  script-message danmu_match                             Ctrl+DOWN        config:137                      触发弹幕匹配（发给弹幕脚本）
+  204  seek  30                                               FORWARD          config:105                      快进 30 秒（系统快进键）
+  205  seek  5                                                RIGHT            config:125                      快进 5 秒
+  206  seek  85                                               Ctrl+RIGHT       config:132                      快进 85 秒
+  207  seek -10                                               WHEEL_LEFT       内置                            快退 10 秒（滚轮左）
+  208  seek -30                                               REWIND           config:104                      快退 30 秒（系统快退键）
+  209  seek -5                                                LEFT             config:124                      快退 5 秒
+  210  seek -600                                              Shift+PGDWN      内置                            快退 600 秒（10 分钟）
+  211  seek -90                                               Ctrl+LEFT        config:131                      快退 90 秒
+  212  seek 0 absolute                                        HOME             内置                            跳到开头
+  213  seek 10                                                WHEEL_RIGHT      内置                            快进 10 秒（滚轮右）
+  214  seek 600                                               Shift+PGUP       内置                            快进 600 秒（10 分钟）
+  215  set audio-delay 0 ; set sub-delay 0                    Shift+BS         config:36                       重置音频与字幕同步
+  216  set contrast 0 ; set brightness 0 ; set gamma 0 ; set saturation 0 ; set hue 0   Ctrl+BS  config:81                       重置全部画面调色（对比/亮度/伽马/饱和/色相）
+  217  set fullscreen no                                      ESC              config:119                      退出全屏
+  218  set fullscreen yes                                     ENTER            config:138                      进入全屏
+  219  set glsl-shaders "..knlm_lite_RT.glsl;..Adaptive_sharpen_lite_RT.glsl" Ctrl+0   config:63                       一键套用 去噪+锐化 组合（老片专用）
+  220  set pause no                                           PLAY             config:100                      继续播放（系统播放键）
+  221  set pause no                                           PLAYONLY         内置                            继续播放
+  222  set pause yes                                          PAUSE            config:101                      暂停
+  223  set pause yes                                          PAUSEONLY        内置                            暂停
+  224  set speed 1.0                                          BS               内置                            播放速度重置为 1.0x
+  225  set video-align-x  0.00; set video-align-y  0.00       Ctrl+KP_BEGIN    内置                            画面对齐归零（Ctrl+小键盘 Home）
+  226  set video-pan-x  0.00; set video-pan-y  0.00           Ctrl+KP5         内置                            画面平移归零（Ctrl+小键盘 5）
+  227  set video-rotate  0                                    Alt+KP5          内置                            画面旋转角度归零
+  228  set video-scale-x  1.00; set video-scale-y 1; set video-zoom 0        KP5         内置                            画面缩放与裁边全部重置（小键盘 5）
+  229  set video-zoom 0; no-osd set panscan 0; no-osd set video-pan-x 0; no-osd set video-pan-y 0; no-osd set video-align-x 0; no-osd set video-align-y 0  Alt+BS  内置                            重置全部画面变换（缩放/裁边/平移/对齐）
+  230  set window-scale 0.5                                   Alt+0            内置                            窗口缩放到 0.5 倍
+  231  set window-scale 1.0                                   Alt+1            内置                            窗口缩放到 1.0 倍（原始大小）
+  232  set window-scale 2.0                                   Alt+2            内置                            窗口缩放到 2.0 倍
+  233  show-progress                                          o                内置                            显示播放进度条
+  234  show-progress                                          P                内置                            显示播放进度条
+  235  show-text ${playlist}                                  F8               内置                            屏幕显示播放列表内容
+  236  show-text ${track-list}                                F9               内置                            屏幕显示音视频字幕轨道列表
+  237  stop                                                   STOP             config:103                      停止播放（系统停止键）
+  238  sub-seek -1                                            KP4              config:126                      跳到上一句字幕（小键盘 4）
+  239  sub-seek 1                                             KP6              config:127                      跳到下一句字幕（小键盘 6）
+  240  sub-step -1                                            Shift+Ctrl+LEFT  内置                            字幕时间微调：上一句提前
+  241  sub-step 1                                             Shift+Ctrl+RIGHT 内置                            字幕时间微调：下一句推后
+  242  vf clr ""                                              ~                config:39                       清空全部视频滤镜(vf)
+  243  vf set vapoursynth="~~/vs/MEMC_MVT_LQ.vpy"             !                config:41                       滤镜预设：补帧 MVTools_快速
+  244  vf set vapoursynth="~~/vs/MEMC_RIFE_DML.vpy"           @                config:42                       滤镜预设：补帧 RIFE_DX12
+  245  vf set vapoursynth="~~/vs/MEMC_RIFE_NV.vpy"            #                config:43                       滤镜预设：补帧 RIFE_RTX（DLC-vsNV）
+  246  vf set vapoursynth="~~/vs/MIX_UAI_DML.vpy"             $                config:45                       滤镜预设：AI 放大 UAI_DX12
+  247  vf set vapoursynth="~~/vs/MIX_UAI_NV_TRT.vpy"          %                config:46                       滤镜预设：AI 放大 UAI_RTX（DLC-vsNV）
+====================================================================================================================
+  统计     247 条生效绑定
+            - 来自你的 input.conf : 63 条
+            - 来自脚本           : 21 条
+            - 内置（编译在 exe 里）: 163 条
