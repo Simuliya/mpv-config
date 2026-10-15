@@ -12,7 +12,12 @@ local Subtitle = require('subtitles.subtitle')
 local mp = require('mp')
 local platform = require('platform.init')
 local switch = require('utils.switch')
-local custom_sub_filter = pcall(h.maybe_require, 'subs2srs_sub_filter')
+-- NOTE: pcall returns (ok, module); keeping only the first value left this as a
+-- boolean, so `custom_sub_filter.preprocess` raised "attempt to index a boolean".
+local custom_sub_filter_ok, custom_sub_filter = pcall(h.maybe_require, 'subs2srs_sub_filter')
+if not custom_sub_filter_ok then
+    custom_sub_filter = nil
+end
 
 local self = {}
 
