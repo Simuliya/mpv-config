@@ -27,14 +27,59 @@ local function is_full(track)
     return h.str_contains(track.title, 'full')
 end
 
-local function is_garbage(track)
-    for _, keyword in pairs({ 'song', 'sign', 'caption', 'commentary', 'bilingual', '双语',
-            '中日', '中英', '中上英下', '英上中下', '中上日下', '日上中下' }) do
+-- Tracks that already carry two languages in one file, e.g. "中上英下", "中日双语".
+local bilingual_keywords = { 'bilingual', '双语', '中日', '中英',
+    '中上英下', '英上中下', '中上日下', '日上中下' }
+
+-- Tracks that are unusable as a study source regardless of language.
+local garbage_keywords = { 'song', 'sign', 'caption', 'commentary' }
+
+local function is_bilingual(track)
+    for _, keyword in pairs(bilingual_keywords) do
         if h.str_contains(track.title, keyword) then
             return true
         end
     end
     return false
+end
+
+local function is_garbage(track)
+    if is_bilingual(track) then
+        return true
+    end
+    for _, keyword in pairs(garbage_keywords) do
+        if h.str_contains(track.title, keyword) then
+            return true
+        end
+    end
+    return false
+end
+
+--- Return the first ready-made bilingual subtitle track.
+--- A bilingual track may legitimately be flagged forced (and usually is), so
+--- `forced` must not disqualify it: prefer `default`, then a non-forced track.
+--- Returns nil when the file has no bilingual track.
+local function find_bilingual_track()
+    local candidates = {}
+    for _, track in ipairs(h.get_loaded_tracks('sub')) do
+        if is_bilingual(track) then
+            table.insert(candidates, track)
+        end
+    end
+    if #candidates == 0 then
+        return nil
+    end
+    for _, track in ipairs(candidates) do
+        if track.default then
+            return track
+        end
+    end
+    for _, track in ipairs(candidates) do
+        if not track.forced then
+            return track
+        end
+    end
+    return candidates[1]
 end
 
 local function prioritize_full_subs(tracks_list)
@@ -85,6 +130,20 @@ local function on_mouse_move(_, state)
 end
 
 local function on_file_loaded()
+    -- Prefer a ready-made bilingual track: switch the primary subtitle to it and
+    -- leave the secondary slot empty, instead of stitching two separate tracks.
+    local bilingual = self.config.prefer_bilingual_sub and find_bilingual_track() or nil
+    if bilingual then
+        if mp.get_property_native('sid') ~= bilingual.id then
+            mp.set_property_native('sid', bilingual.id)
+        end
+        if mp.get_property_native('secondary-sid') ~= false then
+            mp.set_property_native('secondary-sid', 'no')
+        end
+        return
+    end
+
+    -- Fallback: stitch primary + secondary from two separate tracks.
     -- If secondary sid is not already set, try to find and set it.
     local secondary_sid = mp.get_property_native('secondary-sid')
     if secondary_sid == false and self.config.secondary_sub_auto_load == true then

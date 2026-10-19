@@ -40,6 +40,7 @@ this.defaults = {
     autoclip_custom_args = "",     -- command to run when autoclip is triggered and autoclip_method and set to "custom_command".
 
     -- Secondary subtitle
+    prefer_bilingual_sub = true,                    -- Prefer a ready-made bilingual track over stitching primary + secondary.
     secondary_sub_auto_load = true,                 -- Automatically load secondary subtitle track when a video file is opened.
     secondary_sub_lang = 'eng,en,rus,ru,jp,jpn,ja', -- Language of secondary subs that should be automatically loaded.
     secondary_sub_area = 0.15,                      -- Hover area. Fraction of the window from the top.
