@@ -445,6 +445,7 @@ local main = (function()
         mp.add_key_binding("Ctrl+h", "mpvacious-sub-rewind", _ { play_control.sub_rewind })
         mp.add_key_binding("Ctrl+H", "mpvacious-sub-replay", _ { play_control.play_till_sub_end })
         mp.add_key_binding("Ctrl+L", "mpvacious-sub-play-up-to-next", _ { play_control.play_till_next_sub_end })
+        mp.add_key_binding("Ctrl+l", "mpvacious-sub-loop-toggle", _ { play_control.toggle_sub_loop })
 
         mp.msg.warn("Press 'a' to open the mpvacious menu.")
 
